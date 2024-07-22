@@ -1,0 +1,1 @@
+gcc -Wall -o memtest memtest.c pthread.c

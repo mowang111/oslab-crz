@@ -126,7 +126,6 @@ void schedule(void)
 		}
 
 /* this is the scheduler proper: */
-
 	while (1) {
 		c = -1;
 		next = 0;

@@ -190,6 +190,7 @@ __asm__("str %%ax\n\t" \
  */
 #define switch_to(n) {\
 struct {long a,b;} __tmp; \
+__tmp.a = 0; \
 current = thread[n]->task; \
 __asm__("cmpl %%ecx,current_thread\n\t" \
 	"je 1f\n\t" \

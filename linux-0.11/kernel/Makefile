@@ -11,9 +11,20 @@ AS	=as --32
 LD	=ld
 LDFLAGS	=-m elf_i386 -x
 CC	=gcc-3.4 -march=i386
-CFLAGS	=-m32 -g -Wall -O -fstrength-reduce -fomit-frame-pointer \
+CFLAGS	=-m32 -g -Wall -O1 -fstrength-reduce -fomit-frame-pointer \
 	-finline-functions -nostdinc -I../include
 CPP	=gcc-3.4 -E -nostdinc -I../include
+
+OBJS  = sched.o system_call.o traps.o asm.o fork.o \
+	panic.o printk.o vsprintf.o sys.o exit.o \
+	signal.o mktime.o pckernel.o
+
+kernel.o: $(OBJS)
+	$(LD) -m elf_i386 -r -o kernel.o $(OBJS)
+	sync
+
+sched.o: sched.c
+	$(CC) $(CFLAGS) -O0 -c -o sched.o sched.c 
 
 .c.s:
 	$(CC) $(CFLAGS) \
@@ -23,14 +34,6 @@ CPP	=gcc-3.4 -E -nostdinc -I../include
 .c.o:
 	$(CC) $(CFLAGS) \
 	-c -o $*.o $<
-
-OBJS  = sched.o system_call.o traps.o asm.o fork.o \
-	panic.o printk.o vsprintf.o sys.o exit.o \
-	signal.o mktime.o pckernel.o
-
-kernel.o: $(OBJS)
-	$(LD) -m elf_i386 -r -o kernel.o $(OBJS)
-	sync
 
 clean:
 	rm -f core *.o *.a tmp_make keyboard.s
@@ -48,7 +51,8 @@ dep:
 	(cd blk_drv; make dep)
 
 ### Dependencies:
-pckernel.s pckernel.o: pckernel.c ../include/linux/pckernel.h ../include/linux/sched.h
+pckernel.s pckernel.o: pckernel.c ../include/linux/pckernel.h ../include/linux/sched.h \
+  ../include/asm/segment.h ../include/asm/system.h
 exit.s exit.o: exit.c ../include/errno.h ../include/signal.h \
   ../include/sys/types.h ../include/sys/wait.h ../include/linux/sched.h \
   ../include/linux/head.h ../include/linux/fs.h ../include/linux/mm.h \

@@ -168,7 +168,8 @@ int find_empty_thread(void)
 		for(i=0 ; i<NR_THREADS; i++)
 			if (thread[i] && thread[i]->tid == last_tid) goto repeat;
 	for(i=1 ; i<NR_THREADS ; i++)
-		if (!thread[i])
+		if (!thread[i]) {
 			return i;
+		}
 	return -EAGAIN;
 }
